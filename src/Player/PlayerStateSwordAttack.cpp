@@ -50,20 +50,17 @@ void PlayerStateSwordAttack::exeAttack() {
     }
     bool isGrounded = al::isOnGround(mActor, 2);
     if (isGrounded) {
-        const sead::Vector3f* groundNorm = &al::getCollidedGroundNormal(mActor);
-        //sead::Vector3f intoGround{-groundNorm->x, -groundNorm->y, -groundNorm->z};
-        al::addVelocityToDirection(mActor, -*groundNorm, 1.0f);
-        al::scaleVelocityExceptDirection(mActor, -*groundNorm, 0.9f);
+        const sead::Vector3f& groundNorm = al::getCollidedGroundNormal(mActor);
+        al::addVelocityToDirection(mActor, -groundNorm, 1.0f);
+        al::scaleVelocityExceptDirection(mActor, -groundNorm, 0.9f);
         al::reboundVelocityFromCollision(mActor, 0.0f, 0.0f, 1.0f);
-        bool doKill = al::isActionEnd(mActor) && isGrounded;
-        if (doKill) {
-            kill();
-        }
-        return;
     }
     else {
         al::addVelocityToGravity(mActor, 1.0f);
         al::scaleVelocityDirection(mActor, al::getGravity(mActor), 0.99f);
-        al::isActionEnd(mActor);
+    }
+    
+    if (al::isActionEnd(mActor) && isGrounded) {
+        kill();
     }
 }
